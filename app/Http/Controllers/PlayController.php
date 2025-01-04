@@ -43,12 +43,12 @@ class PlayController extends Controller
     // Delete all plays for a specific player
     public function destroy($id)
     {
-        //
+        return "Deletes record of ALL plays for Player with ID : $id";
     }
 
     // Get all plays for a specific player
     public function index($id)
     {
-        //
+        return "Returns the list of ALL plays for Player with ID : $id";
     }
 }

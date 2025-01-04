@@ -54,7 +54,7 @@ class User extends Authenticatable
         return $this->hasMany(Play::class);
     }
 
-    /**
+    /*
      * Validate nickname uniqueness if not "anonymous".
      * This method ensures that before creating or updating a User instance, the nickname field is checked for uniqueness with the
      * following rule: Custom nicknames (any value other than "anonymous") must be unique.

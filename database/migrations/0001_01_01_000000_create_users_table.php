@@ -21,7 +21,7 @@ return new class extends Migration
             $table->rememberToken();
             $table->timestamps();
 
-            $table->unique('nickname')->where('nickname', '<>', 'anonymous');
+            // The condition of UNIQUE nickname unless "anonymous" is set in the Model
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

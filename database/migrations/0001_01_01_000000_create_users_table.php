@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->enum('role', ['admin', 'player'])->default('player');  // Roles for Sanctum auth (I cannot install Passport)
             $table->rememberToken();
             $table->timestamps();
 

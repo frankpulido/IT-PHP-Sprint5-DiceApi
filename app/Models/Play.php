@@ -33,7 +33,7 @@ class Play extends Model
         });
     }
 
-    // Relationship to Section
+    // Relationship to User class
     public function user()
     {
         return $this->belongsTo(User::class);

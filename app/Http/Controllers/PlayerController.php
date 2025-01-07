@@ -4,24 +4,52 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class PlayerController extends Controller
 {
-    // Create a new player
+    // Create a new player (must be registered first and having email address confirmed)
     public function store(Request $request)
     {
-        return "Here is the form to create a NEW Player";
-    }
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            //'nickname' => 'nullable|string|max:255',
+            'nickname' => [
+                'nullable',
+                'string',
+                'max:255',
+                function ($attribute, $value, $fail) {
+                    if ($value !== 'anonymous' && User::where('nickname', $value)->exists()) {
+                        $fail('The nickname must be unique unless it is "anonymous".');
+                    }
+                },
+            ],
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:8|confirmed' // "confirm" means that 'password' == 'password_confirmation' in $request
+        ]);
 
-    // Update a player's name
-    public function update($id, Request $request)
-    {
-        return "Here is the form to UPDATE name for Player with ID : $id";
+        $player = User::create([
+            'name' => $validated['name'],
+            'nickname' => $validated['nickname'] ?? 'anonymous',
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+        ]);
+
+        return response()->json([
+            'message' => 'Player created successfully',
+            'player' => $player,
+        ], 201);
     }
 
     // List all players with their success rates
     public function index()
     {
+        /*
+        // Restrict to admin
+        if ($request->user()->role !== 'admin') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+        */
         return "Here comes the list of ALL players and their average success rate";
     }
 

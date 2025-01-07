@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Validation\ValidationException;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -23,6 +24,7 @@ class User extends Authenticatable
         'nickname',
         'email',
         'password',
+        'role'
     ];
 
     /**
@@ -48,7 +50,7 @@ class User extends Authenticatable
         ];
     }
 
-    // Relationship to Play
+    // Relationship to Play class
     public function plays()
     {
         return $this->hasMany(Play::class);
@@ -78,4 +80,15 @@ class User extends Authenticatable
             }
         });
     }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isPlayer(): bool
+    {
+        return $this->role === 'player';
+    }
+
 }

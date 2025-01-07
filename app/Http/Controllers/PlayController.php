@@ -46,7 +46,7 @@ class PlayController extends Controller
         Play::where('user_id', $user->id)->delete();
 
         return response()->json([
-            'message' => "All plays for user ID {$user->id} have been deleted."
+            'message' => "All plays for user {$user->nickname} have been deleted."
         ], 200);
     }
 
@@ -59,7 +59,7 @@ class PlayController extends Controller
         $plays = Play::where('user_id', $user->id)->get();
 
         return response()->json([
-            'message' => "All plays for user ID {$user->id}",
+            'message' => "All plays for user {$user->nickname}",
             'plays' => $plays
         ], 200);
     }

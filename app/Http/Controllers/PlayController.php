@@ -23,8 +23,7 @@ class PlayController extends Controller
         $success = ($dice1 + $dice2) === 7;
 
         // Create a new play
-        $play = Play::create([
-            'user_id' => $user->id, // I modified this line too
+        $play = $request->user()->plays()->create([ // Rely entirely on auth:sanctum middleware to validate the user.
             'dice1' => $dice1,
             'dice2' => $dice2,
             'success' => $success,
@@ -73,14 +72,16 @@ class PlayController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'nickname' => 'nullable|string|max:255',
         ]);
 
         $user->update([
             'name' => $validated['name'],
+            'nickname' => $validated['nickname'] ?? $user->nickname, // Keep current nickname if not provided. When not unique the Model will reject change.
         ]);
     
         return response()->json([
-            'message' => 'User name updated successfully.',
+            'message' => 'User data updated successfully.',
             'user' => $user,
         ], 200);
     }

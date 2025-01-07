@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Play;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -11,6 +12,13 @@ class PlayerController extends Controller
     // Create a new player (must be registered first and having email address confirmed)
     public function store(Request $request)
     {
+        $request->headers->set('Accept', 'application/json');
+        
+        // Restrict to admin
+        if (!$request->user()->isAdmin()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             //'nickname' => 'nullable|string|max:255',
@@ -41,33 +49,92 @@ class PlayerController extends Controller
         ], 201);
     }
 
+
     // List all players with their success rates
-    public function index()
+    public function index(Request $request)
     {
-        /*
-        // Restrict to admin
-        if ($request->user()->role !== 'admin') {
+        $request->headers->set('Accept', 'application/json');
+        if (!$request->user()->isAdmin()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
-        */
-        return "Here comes the list of ALL players and their average success rate";
+
+        $users = User::all();
+        $total_players = User::count();
+        $players = [];
+        // Calculate average success rate for each player and dinamically adds attribute 'average_success_rate'
+        foreach ($users as $user) {
+            $players[] = [
+                'id' => $user->id,
+                'name' => $user->name,
+                'nickname' => $user->nickname,
+                'total_throws' => $user->total_throws = $user->plays()->count() ?? 0,
+                'average_success_rate' => number_format($user->plays()->avg('success') ?? 0, 4) // String but at least rounds decimals
+            ];
+        }
+
+        return response()->json([
+            'message' => 'List of all players and their average success rates.',
+            'total_players' => $total_players,
+            'players' => $players
+        ], 200);
     }
 
+
     // Average success across all plays (all players)
-    public function ranking()
+    public function ranking(Request $request)
     {
-        return "Average success across all plays (of all players)";
+        $request->headers->set('Accept', 'application/json');
+        // Restrict to admin
+        if (!$request->user()->isAdmin()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $total_throws = Play::count();
+        $total_successes = Play::where('success', 1)->count();
+        $average_success_rate = Play::avg('success') ?? 0;
+
+        return response()->json([
+            'message' => 'Average success across all plays (all players).',
+            'total_throws' => $total_throws,
+            'total_successes' => $total_successes,
+            'average_success_rate' => $average_success_rate
+        ], 200);
     }
 
     // Player with the lowest success rate
-    public function loser()
+    public function loser(Request $request)
     {
-        return "Returns player with LOWEST success rate";
+        $request->headers->set('Accept', 'application/json');
+        // Restrict to admin
+        if (!$request->user()->isAdmin()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $players = collect($this->index($request)->original['players']);
+        $players = $players->where('total_throws', '>', 0); // Filter players with total_throws > 0 using where
+        $loser = $players->sortBy('average_success_rate')->first();
+
+        return response()->json([
+            'message' => 'Player with the LOWEST success rate.',
+            'loser' => $loser,
+        ], 200);
     }
 
     // Player with the highest success rate
-    public function winner()
+    public function winner(Request $request)
     {
-        return "Returns player with HIGHEST success rate";
+        $request->headers->set('Accept', 'application/json');
+        // Restrict to admin
+        if (!$request->user()->isAdmin()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+        
+        $players = collect($this->index($request)->original['players']);
+        $winner = $players->sortByDesc('average_success_rate')->first();
+
+        return response()->json([
+            'message' => 'Player with the HIGHEST success rate.',
+            'loser' => $winner,
+        ], 200);
     }
 }

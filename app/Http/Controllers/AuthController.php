@@ -65,7 +65,7 @@ class AuthController extends Controller
             'message' => 'User successfully logged in.',
             'player' => $user,
             'your_token' => $token->plainTextToken
-        ], 201);
+        ], 200);
     }
 
     public function logout (Request $request) {

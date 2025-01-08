@@ -6,10 +6,18 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\PlayController;
 
-
+/*
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+*/
+
+Route::get('/login', function () {
+    return response()->json([
+        'status' => false,
+        'message' => 'Login route is not available for APIs.',
+    ], 404);
+});
 
 /*
 I had the idea of creating 2 Controllers : one of them for admin exclusive functions and the other for user access
@@ -26,7 +34,6 @@ Route::get('/players/ranking', [PlayerController::class, 'ranking']); // Average
 Route::get('/players/ranking/loser', [PlayerController::class, 'loser']); // Returns player with lowest success rate
 Route::get('/players/ranking/winner', [PlayerController::class, 'winner']); // Returns player with highest success rate
 
-//Route::middleware('auth:sanctum')->group(function () {
 Route::put('/players/{id}', [PlayController::class, 'update']); // Update player name
 Route::post('/players/{id}/games', [PlayController::class, 'play']); // Player rolls the dice and store outcome in db
 Route::delete('/players/{id}/games', [PlayController::class, 'destroy']); // Delete player's plays

@@ -51,6 +51,11 @@ class Handler extends ExceptionHandler
         if ($request->is('api/*')) {
             if ($exception instanceof AuthenticationException) {
                 return $this->unauthenticated($request, $exception);
+                /*
+                return response()->json([
+                    'message' => 'Unauthenticated',
+                ], 401);
+                */
             }
         }
         return parent::render($request, $exception);

@@ -43,9 +43,12 @@ class PlayerController extends Controller
             'password' => Hash::make($validated['password']),
         ]);
 
+        $token = $player->createToken($request->name);
+
         return response()->json([
             'message' => 'Player created successfully',
             'player' => $player,
+            'your_token' => $token->plainTextToken
         ], 201);
     }
 

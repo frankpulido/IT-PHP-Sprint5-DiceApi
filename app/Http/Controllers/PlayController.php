@@ -5,15 +5,20 @@ namespace App\Http\Controllers;
 use App\Models\Play;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Laravel\Sanctum\PersonalAccessToken;
+//use Laravel\Sanctum\PersonalAccessToken;
 
 class PlayController extends Controller
 {
     // Roll the dice and store the new play
-    public function play(Request $request)
+    public function play(Request $request, $id)
     {
         $request->headers->set('Accept', 'application/json');
         $user = $request->user();
+
+        // Check if the authenticated user's ID matches the ID in the route
+        if ($user->id != $id) {
+            return response()->json(['error' => 'Forbidden'], 403);
+        }
 
         // Roll both dice
         $dice1 = random_int(1, 6);
@@ -38,10 +43,14 @@ class PlayController extends Controller
 
 
     // Delete all plays for a specific player
-    public function destroy(Request $request)
+    public function destroy(Request $request, $id)
     {
         $request->headers->set('Accept', 'application/json');
         $user = $request->user();
+        if ($user->id != $id) {
+            return response()->json(['error' => 'Forbidden'], 403);
+        }
+
         Play::where('user_id', $user->id)->delete();
 
         return response()->json([
@@ -51,10 +60,14 @@ class PlayController extends Controller
 
 
     // Get all plays for a specific player
-    public function history(Request $request)
+    public function history(Request $request, $id)
     {
         $request->headers->set('Accept', 'application/json');
         $user = $request->user();
+        if ($user->id != $id) {
+            return response()->json(['error' => 'Forbidden'], 403);
+        }
+
         $plays = Play::where('user_id', $user->id)->get();
 
         return response()->json([
@@ -65,10 +78,13 @@ class PlayController extends Controller
 
 
     // Update a player's name
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
         $request->headers->set('Accept', 'application/json');
         $user = $request->user();
+        if ($user->id != $id) {
+            return response()->json(['error' => 'Forbidden'], 403);
+        }
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',

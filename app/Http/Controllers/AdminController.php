@@ -16,7 +16,7 @@ class AdminController extends Controller
         
         // Restrict to admin
         if (!$request->user()->isAdmin()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Forbidden.'], 403);
         }
 
         $validated = $request->validate([
@@ -46,7 +46,7 @@ class AdminController extends Controller
         $token = $player->createToken($request->name);
 
         return response()->json([
-            'message' => 'Player created successfully',
+            'message' => 'Player created successfully.',
             'player' => $player,
             'your_token' => $token->plainTextToken
         ], 201);

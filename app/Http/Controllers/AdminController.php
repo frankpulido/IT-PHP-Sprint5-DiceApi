@@ -7,7 +7,7 @@ use App\Models\Play;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
-class PlayerController extends Controller
+class AdminController extends Controller
 {
     // Create a new player (must be registered first and having email address confirmed)
     public function store(Request $request)

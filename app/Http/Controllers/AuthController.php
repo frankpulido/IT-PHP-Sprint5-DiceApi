@@ -38,7 +38,7 @@ class AuthController extends Controller
         $token = $user->createToken($request->name);
 
         return response()->json([
-            'message' => 'Player created successfully',
+            'message' => 'Player created successfully.',
             'player' => $user,
             'your_token' => $token->plainTextToken
         ], 201);
@@ -52,13 +52,16 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
-        $user = User::where('email', $request->email)->first();
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            // user with $request->email non-existent or wrong $request->password invalidates login
+        // Case 1 : invalid email). Validate method breaks execution before reaching this line.
+        $user = User::where('email', $request->email)->first(); // Case 1 (invalid email) is detected here.
+        
+        // Case 2: Password is incorrect (401 Unauthorized)
+        if (!Hash::check($request->password, $user->password)) {
             return response()->json([
-                'message' => 'Unauthorized log in. Check email and password',
+                'message' => 'Incorrect password. Try again.',
             ], 401);
         }
+
         $token = $user->createToken($user->name);
 
         return response()->json([

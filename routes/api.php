@@ -10,7 +10,7 @@ use App\Http\Controllers\PlayController;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
-*/
+
 
 Route::get('/login', function () {
     return response()->json([
@@ -18,12 +18,7 @@ Route::get('/login', function () {
         'message' => 'Login route is not available for APIs.',
     ], 404);
 });
-
-/*
-I had the idea of creating 2 Controllers : one of them for admin exclusive functions and the other for user access
-This has to be revised, I am not sure about it...
-For the moment we have one user-specific and other for statistics
-*/ 
+*/
 
 // Route::apiResource('plays', PlayController::class); // Study this Resource : creates ALL routes based on controller methods
 
@@ -40,7 +35,7 @@ Route::delete('/players/{id}/games', [PlayController::class, 'destroy']); // Del
 Route::get('/players/{id}/games', [PlayController::class, 'history']); // List all plays for a given player
 });
 
-Route::post('/register', [AuthController::class, 'register']); // Retiurns confirmation message for user's registration
+Route::post('/register', [AuthController::class, 'register']); // Returns confirmation message for user's registration
 Route::post('/login', [AuthController::class, 'login']); // Returns confirmation message for user's log in
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum'); // Deletes user's tokens and returns confirmation message for user's log out
 

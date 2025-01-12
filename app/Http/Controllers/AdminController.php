@@ -58,7 +58,7 @@ class AdminController extends Controller
     {
         $request->headers->set('Accept', 'application/json');
         if (!$request->user()->isAdmin()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Forbidden.'], 403);
         }
 
         $users = User::all();
@@ -89,7 +89,7 @@ class AdminController extends Controller
         $request->headers->set('Accept', 'application/json');
         // Restrict to admin
         if (!$request->user()->isAdmin()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Forbidden.'], 403);
         }
 
         $total_throws = Play::count();
@@ -110,7 +110,7 @@ class AdminController extends Controller
         $request->headers->set('Accept', 'application/json');
         // Restrict to admin
         if (!$request->user()->isAdmin()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Forbidden.'], 403);
         }
 
         $players = collect($this->index($request)->original['players']);
@@ -129,7 +129,7 @@ class AdminController extends Controller
         $request->headers->set('Accept', 'application/json');
         // Restrict to admin
         if (!$request->user()->isAdmin()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
+            return response()->json(['message' => 'Forbidden.'], 403);
         }
         
         $players = collect($this->index($request)->original['players']);
@@ -137,7 +137,7 @@ class AdminController extends Controller
 
         return response()->json([
             'message' => 'Player with the HIGHEST success rate.',
-            'loser' => $winner,
+            'winner' => $winner,
         ], 200);
     }
 }

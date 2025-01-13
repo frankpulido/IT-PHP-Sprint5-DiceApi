@@ -17,7 +17,7 @@ class PlayController extends Controller
 
         // Check if the authenticated user's ID matches the ID in the route
         if ($user->id != $id) {
-            return response()->json(['error' => 'Forbidden'], 403);
+            return response()->json(['message' => 'Forbidden.'], 403);
         }
 
         // Roll both dice
@@ -36,7 +36,7 @@ class PlayController extends Controller
 
         // Return the play details
         return response()->json([
-            'message' => 'Play recorded successfully',
+            'message' => 'Play recorded successfully.',
             'play' => $play,
         ], 201);
     }
@@ -48,7 +48,7 @@ class PlayController extends Controller
         $request->headers->set('Accept', 'application/json');
         $user = $request->user();
         if ($user->id != $id) {
-            return response()->json(['error' => 'Forbidden'], 403);
+            return response()->json(['message' => 'Forbidden.'], 403);
         }
 
         Play::where('user_id', $user->id)->delete();
@@ -65,7 +65,7 @@ class PlayController extends Controller
         $request->headers->set('Accept', 'application/json');
         $user = $request->user();
         if ($user->id != $id) {
-            return response()->json(['error' => 'Forbidden'], 403);
+            return response()->json(['message' => 'Forbidden.'], 403);
         }
 
         $plays = Play::where('user_id', $user->id)->get();
@@ -83,7 +83,7 @@ class PlayController extends Controller
         $request->headers->set('Accept', 'application/json');
         $user = $request->user();
         if ($user->id != $id) {
-            return response()->json(['error' => 'Forbidden'], 403);
+            return response()->json(['message' => 'Forbidden.'], 403);
         }
 
         $validated = $request->validate([

@@ -17,7 +17,6 @@ The software must respect the main design patterns.
 ## Add security
 
 Include passport authentication on all accesses to the microservice URLs.
-
 Define a role system and block access to different routes according to their privilege level.
 
 ## Testing

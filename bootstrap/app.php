@@ -15,5 +15,5 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        //$exceptions->bind(ExceptionHandler::class, App\Exceptions\Handler::class); // Use Handler I created through command "php artisan make:exception Handler"
     })->create();

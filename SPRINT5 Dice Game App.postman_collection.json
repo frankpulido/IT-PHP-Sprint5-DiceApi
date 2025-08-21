@@ -1,0 +1,991 @@
+{
+	"info": {
+		"_postman_id": "9610587d-78b8-4e0c-8fc8-d778795551b0",
+		"name": "SPRINT5 Dice Game App",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40515354"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "register_player",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Generate a random password and set it as both environment and collection variable",
+									"let password_player = Math.random().toString(36).slice(-8);",
+									"pm.environment.set(\"password_player\", password_player);",
+									"pm.collectionVariables.set(\"playerPassword\", password_player);",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// Parse the response JSON",
+									"let response = pm.response.json();",
+									"",
+									"// Save player details as collection variables",
+									"pm.collectionVariables.set(\"playerId\", response.player.id);",
+									"pm.collectionVariables.set(\"playerName\", response.player.name);",
+									"pm.collectionVariables.set(\"playerNickname\", response.player.nickname);",
+									"pm.collectionVariables.set(\"playerEmail\", response.player.email);",
+									"pm.collectionVariables.set(\"playerToken\", response.your_token);",
+									"",
+									"// Runner doesn't allow saving order of requests... Solution :",
+									"pm.execution.setNextRequest(\"logout_player\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"{{$randomFirstName}} {{$randomLastName}}\",\n    \"nickname\": \"{{$randomUserName}}\",\n    \"email\": \"{{$randomEmail}}\",\n    \"password\": \"{{password_player}}\",\n    \"password_confirmation\": \"{{password_player}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login_admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"let response = pm.response.json();",
+									"pm.collectionVariables.set(\"adminToken\", response.your_token);",
+									"",
+									"pm.execution.setNextRequest(\"create_player\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{adminEmail}}\",\n    \"password\": \"{{adminPassword}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login_player",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"let response = pm.response.json();",
+									"pm.collectionVariables.set(\"playerToken\", response.your_token);",
+									"",
+									"pm.execution.setNextRequest(\"update_player_name\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{playerEmail}}\",\n    \"password\": \"{{playerPassword}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout_admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.execution.setNextRequest(\"logout_player_copy\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout_player",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.execution.setNextRequest(\"login_player\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{playerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Register endpoint for user player and login/logout endpoints for both users (player and admin)."
+		},
+		{
+			"name": "logged-in players",
+			"item": [
+				{
+					"name": "player_throw_dice",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"",
+									"const dice1 = response.play.dice1;",
+									"const dice2 = response.play.dice2;",
+									"const success = response.play.success;",
+									"",
+									"// Check that success has the expected value",
+									"pm.test(\"Success value is correct\", function () {",
+									"    const expectedSuccess = (dice1 + dice2) === 7;",
+									"    pm.expect(success).to.eql(expectedSuccess);",
+									"});",
+									"",
+									"pm.execution.setNextRequest(\"returns_all_plays_of_given_player\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{playerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/players/:id/games",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"players",
+								":id",
+								"games"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{playerId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "returns_all_plays_of_given_player",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.execution.setNextRequest(\"delete_all_player_record\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{playerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/players/:id/games",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"players",
+								":id",
+								"games"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{playerId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete_all_player_record",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.execution.setNextRequest(\"login_admin\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{playerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/players/:id/games",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"players",
+								":id",
+								"games"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{playerId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update_player_name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// Parse JSON response",
+									"const response = pm.response.json();",
+									"// Get the request body",
+									"const requestBody = pm.request.body.raw ? JSON.parse(pm.request.body.raw) : {};",
+									"",
+									"// Validate that the name matches",
+									"if (requestBody.name) {",
+									"    pm.test(\"Name in response matches request body\", function () {",
+									"        pm.expect(response.user.name).to.eql(requestBody.name);",
+									"    });",
+									"}",
+									"// Validate that the nickname matches",
+									"if (requestBody.nickname) {",
+									"    pm.test(\"Nickname in response matches request body\", function () {",
+									"        pm.expect(response.user.nickname).to.eql(requestBody.nickname);",
+									"    });",
+									"};",
+									"",
+									"pm.execution.setNextRequest(\"player_throw_dice\");",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{playerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"{{$randomFirstName}} {{$randomLastName}}\",\n    \"nickname\": \"{{$randomUserName}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/players/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"players",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{playerId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for authenticated players"
+		},
+		{
+			"name": "admin-statistics",
+			"item": [
+				{
+					"name": "create_player",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"// Parse the response JSON",
+									"let response = pm.response.json();",
+									"",
+									"// Save player details as collection variables",
+									"pm.collectionVariables.set(\"playerId\", response.player.id);",
+									"pm.collectionVariables.set(\"playerName\", response.player.name);",
+									"pm.collectionVariables.set(\"playerNickname\", response.player.nickname);",
+									"pm.collectionVariables.set(\"playerEmail\", response.player.email);",
+									"pm.collectionVariables.set(\"playerToken\", response.your_token);",
+									"",
+									"pm.execution.setNextRequest(\"players_success_rate\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//pm.environment.set(\"password\", Math.random().toString(36).slice(-8));",
+									"",
+									"// Generate a random password and set it as both environment and collection variable",
+									"let password = Math.random().toString(36).slice(-8);",
+									"pm.environment.set(\"password\", password);",
+									"pm.collectionVariables.set(\"playerPassword\", password);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"{{$randomFirstName}} {{$randomLastName}}\",\n    \"nickname\": \"{{$randomUserName}}\",\n    \"email\": \"{{$randomEmail}}\",\n    \"password\": \"{{password}}\",\n    \"password_confirmation\": \"{{password}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/players",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"players"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "players_success_rate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.execution.setNextRequest(\"avg_success_rate_all_players\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/players",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"players"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "avg_success_rate_all_players",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.execution.setNextRequest(\"return_player_lowest_success_rate\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/players/ranking",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"players",
+								"ranking"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "return_player_lowest_success_rate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.execution.setNextRequest(\"return_player_highest_success_rate\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/players/ranking/loser",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"players",
+								"ranking",
+								"loser"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "return_player_highest_success_rate",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.execution.setNextRequest(\"logout_admin\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/players/ranking/winner",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"players",
+								"ranking",
+								"winner"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for authenticated admins"
+		},
+		{
+			"name": "errors : validation-unauthenticated-forbidden",
+			"item": [
+				{
+					"name": "player_throw_dice_403",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});",
+									"",
+									"//const response = pm.response.json();",
+									"",
+									"//const dice1 = response.play.dice1;",
+									"//const dice2 = response.play.dice2;",
+									"//const success = response.play.success;",
+									"",
+									"// Check that success has the expected value",
+									"//pm.test(\"Success value is correct\", function () {",
+									"//    const expectedSuccess = (dice1 + dice2) === 7;",
+									"//    pm.expect(success).to.eql(expectedSuccess);",
+									"//});",
+									"",
+									"pm.execution.setNextRequest(null);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{playerToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/players/:id/games",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"players",
+								":id",
+								"games"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{playerId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "These requests are exactly the same endpoints in previous folders but will be tested after users (player and admin) log out. Since tokens in database are destroyed all tests must return a \"401 Unauthorized\" response."
+		},
+		{
+			"name": "logout_player_copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.execution.setNextRequest(\"player_throw_dice_403\");"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{playerToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/logout",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"logout"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "adminToken",
+			"value": ""
+		},
+		{
+			"key": "adminEmail",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "adminPassword",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "playerId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "playerName",
+			"value": ""
+		},
+		{
+			"key": "playerNickname",
+			"value": ""
+		},
+		{
+			"key": "playerEmail",
+			"value": ""
+		},
+		{
+			"key": "playerPassword",
+			"value": ""
+		},
+		{
+			"key": "playerToken",
+			"value": ""
+		}
+	]
+}

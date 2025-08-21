@@ -107,7 +107,7 @@ In case you need to work on same feature again :
 (branch feature/name is recreated)
 8- Repeat process from 1 to 6
 
-When recreating the feature branch with the same name and pushing it to origin (git push origin feature/name)
+When recreating the feature branch with the same name and pushing it to origin (git push origin feature/name) the remote repository behaves as if it was the same branch (never deleted locally). 
 
 A ChatGPT advise :
 Over time you accumulate stale remote-tracking branches locally. Clean them from time to time :
@@ -199,6 +199,17 @@ PlayControllerTest :
     Prioritizes.
 
 
+## SWAGGER : API DOCUMENTATION
+https://youtu.be/fTDwgT84SME?si=JHb7Vid7gACu7fCG
+
+To install swagger run the following command :
+    composer require "darkaonline/l5-swagger"
+Then publish configuration running this command :
+    php artisan vendor:publish --provider "L5Swagger\L5SwaggerServiceProvider"
+Once Swagger code is included in Models and Controllers execute :
+    php artisan l5-swagger:generate
+
+
 ## TUTORIALS & OTHER RESOURCES
 
 In convenient chronological order to prepare for the API development :
@@ -212,7 +223,7 @@ https://youtu.be/A36VQFdIAkI?
 POSTMAN SERIE : INTRO TO POSTMAN (6 episodios)
 https://youtube.com/playlist?list=PLM-7VG-sgbtAgGq_pef5y_ruIUBPpUgNJ&si=72l03SQqGNsFQsjq
 
-CHAI ASSERTION LIBRARIES : To design PostMan requests9882255$
+CHAI ASSERTION LIBRARIES : To design PostMan requests
 https://www.chaijs.com/guide/
 https://www.chaijs.com/
 
